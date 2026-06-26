@@ -95,7 +95,8 @@ class ExportImagePlugin(Gimp.PlugIn):
     # 2. Opt out of i18n (change to True + supply a .mo file if you need it)
     def do_set_i18n(self, name):
         return False
-
+    Gimp.message("After i18n call")
+    
     # 3. Describe the procedure to GIMP
     def do_create_procedure(self, name):
         procedure = Gimp.ImageProcedure.new(

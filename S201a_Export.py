@@ -29,7 +29,7 @@ import sys
 
 import gi
 gi.require_version('Gimp', '3.0')
-from gi.repository import Gimp
+from gi.repository import Gimp, Gio
 gi.require_version('GimpUi', '3.0')
 from gi.repository import GimpUi
 
@@ -37,7 +37,7 @@ from gi.repository import GLib
 from gi.repository import Gtk
 
 
-class MyFirstPlugin (Gimp.PlugIn):
+class MySecondPlugin (Gimp.PlugIn):
     def do_query_procedures(self):
         return [ "jb-plug-in-second-try" ]
 
@@ -156,7 +156,9 @@ class MyFirstPlugin (Gimp.PlugIn):
         
         # Get active image and procedure
         Gimp.message("Before getting current image")
-        img = Gimp.get_current_image()
+        # img = Gimp.get_current_image()
+        # img = config.get_property('image') 
+        img = image
         Gimp.message("Got img")
 
         procedure = Gimp.get_pdb().lookup_procedure('file-jpeg-export')
@@ -165,13 +167,29 @@ class MyFirstPlugin (Gimp.PlugIn):
 
         # Configure export settings (non-interactive)
         config = procedure.create_config()
+        Gimp.message("Got config")
+
         config.set_property('run-mode', Gimp.RunMode.NONINTERACTIVE)
-        config.set_property('image', img)
-        config.set_property('file', Gio.File.new_for_path(os.path.expanduser('C:\\Users\\jtb13\\Downloads\\a.jpg')))
+        Gimp.message("Got set")
+
+        config.set_property('image', img)   
+        
+        Gimp.message("Got prop image")
+        
+        # config.set_property('file', Gio.File.new_for_path(os.path.expanduser('C:\\Users\\jtb13\\Downloads\\a.jpg')))
+        # config.set_property('file', 'C:\\Users\\jtb13\\Downloads\\a.jpg')
+        # Convert string path to a proper Gio.File object
+        filepath = 'C:\\Users\\jtb13\\Downloads\\a.jpg'
+        file_obj = Gio.File.new_for_path(filepath)
+        config.set_property('file', file_obj)
+        Gimp.message("Set prop file")
+
         config.set_property('quality', 0.85) # 0.0 to 1.0
+        Gimp.message("Got prop quality")
 
         # Run the procedure
         procedure.run(config)
+        Gimp.message("After procedure run")
         
         Gimp.message("After export call")
 
@@ -179,4 +197,4 @@ class MyFirstPlugin (Gimp.PlugIn):
         # do what you want to do, then, in case of success, return:
         return procedure.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
 
-Gimp.main(MyFirstPlugin.__gtype__, sys.argv)
+Gimp.main(MySecondPlugin.__gtype__, sys.argv)
