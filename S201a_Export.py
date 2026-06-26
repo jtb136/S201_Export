@@ -180,7 +180,14 @@ class MySecondPlugin (Gimp.PlugIn):
         # config.set_property('file', 'C:\\Users\\jtb13\\Downloads\\a.jpg')
         # Convert string path to a proper Gio.File object
         filepath = 'C:\\Users\\jtb13\\Downloads\\a.jpg'
-        file_obj = Gio.File.new_for_path(filepath)
+        filepath = file_path
+
+        # Find last .
+        last_dot = filepath.rfind('.')  
+        new_filepath = filepath.replace('.', '_gp.')
+        
+
+        file_obj = Gio.File.new_for_path(new_filepath)
         config.set_property('file', file_obj)
         Gimp.message("Set prop file")
 
