@@ -182,9 +182,10 @@ class MySecondPlugin (Gimp.PlugIn):
         filepath = 'C:\\Users\\jtb13\\Downloads\\a.jpg'
         filepath = file_path
 
-        # Find last .
-        last_dot = filepath.rfind('.')  
-        new_filepath = filepath.replace('.', '_gp.')
+        # get rid of .MP in the Pixel images
+        filepath_no_mp = filepath.replace('.MP', '')
+        # add _gp to the file we write
+        new_filepath = filepath_no_mp.replace('.', '_gp.')
         
 
         file_obj = Gio.File.new_for_path(new_filepath)
