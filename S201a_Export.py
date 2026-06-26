@@ -24,6 +24,7 @@
 # From: https://docs.gimp.org/3.2/en/gimp-using-python-plug-in-tutorial.html
 # Location: "C:\Users\jtb13\AppData\Roaming\GIMP\3.2\plug-ins\S201t_Test\S201t_Test.py"
 
+import pdb
 import sys
 
 import gi
@@ -133,21 +134,47 @@ class MyFirstPlugin (Gimp.PlugIn):
 
         Gimp.message("After dialog box code")
 
-        # Gimp or gimp ?
-        ximage = Gimp.get_images()[0]
-        ximage = image.get_file()
-        Gimp.message("After gimp reference")
-        # Better way to get the active drawable (layer, mask, or channel):
-        drawables = pdb.gimp_image_get_selected_drawables(ximage)
-        Gimp.message("After drawables reference")
-        active_drawable = drawables[0] if drawables else None
-        # drawable = pdb.gimp_image_get_active_layer(ximage)
-        Gimp.message("After pdb reference")
-        export_current_to_jpeg(ximage, active_drawable)
-        Gimp.message("After export call")
+        # Get the active drawable (layer, mask, or channel) from the current image
+        # get_selected_drawables returns a list; extract the first element for the active drawable
+        drawables = image.get_selected_drawables()
+        if drawables:
+            active_drawable = drawables[0]
+        else:
+            # Handle the case where no drawable is active
+            active_drawable = None
+        Gimp.message("After active drawable retrieval code")
+        if active_drawable is None:
+            Gimp.message("No active drawable found.")
+            return procedure.new_return_values(Gimp.PDBStatusType.FAILURE, GLib.Error())
+
+        Gimp.message("Active drawable retrieved")
 
         # save_as_jpeg_new_name()
         # Gimp.message("After export call")
+
+        # pdb.file_jpeg_save(image, active_drawable, "C:\\Users\\jtb13\\Downloads\\a.jpg", "C:\\Users\\jtb13\\Downloads\\a.jpg", 0.85, 0, 1, 0,"", 0, 0, 0, 0)
+        
+        # Get active image and procedure
+        Gimp.message("Before getting current image")
+        img = Gimp.get_current_image()
+        Gimp.message("Got img")
+
+        procedure = Gimp.get_pdb().lookup_procedure('file-jpeg-export')
+        Gimp.message("Got procedure")
+
+
+        # Configure export settings (non-interactive)
+        config = procedure.create_config()
+        config.set_property('run-mode', Gimp.RunMode.NONINTERACTIVE)
+        config.set_property('image', img)
+        config.set_property('file', Gio.File.new_for_path(os.path.expanduser('C:\\Users\\jtb13\\Downloads\\a.jpg')))
+        config.set_property('quality', 0.85) # 0.0 to 1.0
+
+        # Run the procedure
+        procedure.run(config)
+        
+        Gimp.message("After export call")
+
 
         # do what you want to do, then, in case of success, return:
         return procedure.new_return_values(Gimp.PDBStatusType.SUCCESS, GLib.Error())
