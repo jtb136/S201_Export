@@ -38,7 +38,7 @@ from gi.repository import Gtk
 
 class MyFirstPlugin (Gimp.PlugIn):
     def do_query_procedures(self):
-        return [ "jb-plug-in-first-try" ]
+        return [ "jb-plug-in-second-try" ]
 
     def do_set_i18n (self, name):
         return False
@@ -96,13 +96,13 @@ class MyFirstPlugin (Gimp.PlugIn):
 
         procedure.set_image_types("*")
 
-        procedure.set_menu_label("S201t_Test")
+        procedure.set_menu_label("S201a_Export")
         procedure.add_menu_path('<Image>/Filters/Tutorial/')
 
         procedure.set_documentation("My first Python plug-in tryout",
                                     "My first Python 3 plug-in for GIMP 3.0",
                                     name)
-        procedure.set_attribution("S201t_Test", "S201t_Test", "2023")
+        procedure.set_attribution("S201a_Export", "S201a_Export", "2023")
 
         return procedure
 
@@ -134,13 +134,17 @@ class MyFirstPlugin (Gimp.PlugIn):
         Gimp.message("After dialog box code")
 
         # Gimp or gimp ?
-        # ximage = gimp.image_list()[0]
-        # ximage = image.get_file()
-        # Gimp.message("After gimp reference")
+        ximage = Gimp.get_images()[0]
+        ximage = image.get_file()
+        Gimp.message("After gimp reference")
+        # Better way to get the active drawable (layer, mask, or channel):
+        drawables = pdb.gimp_image_get_selected_drawables(ximage)
+        Gimp.message("After drawables reference")
+        active_drawable = drawables[0] if drawables else None
         # drawable = pdb.gimp_image_get_active_layer(ximage)
-        # Gimp.message("After pdb reference")
-        # export_current_to_jpeg(ximage, drawable)
-        # Gimp.message("After export call")
+        Gimp.message("After pdb reference")
+        export_current_to_jpeg(ximage, active_drawable)
+        Gimp.message("After export call")
 
         # save_as_jpeg_new_name()
         # Gimp.message("After export call")
